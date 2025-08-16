@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Header from '../../components/Header';
 import HandDisplay from '../../components/HandDisplay';
 import EquitySlider from '../../components/EquitySlider';
 import SubmitButton from '../../components/SubmitButton';
@@ -79,58 +80,23 @@ export default function HandVsHandPage() {
 
   return (
     <div className="min-h-screen bg-gray-950">
-      <header className="bg-gray-900 shadow-sm border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <Link href="/" className="text-2xl font-bold text-gray-100 hover:text-gray-300 transition-colors">
-              Poker Equity Estimation
-            </Link>
-            <nav className="flex space-x-6">
-              <Link href="/hand-vs-hand" className="text-blue-400 font-medium">
-                Hand vs. Hand
-              </Link>
-              <Link href="/breakeven" className="text-gray-300 hover:text-gray-100 transition-colors">
-                Breakeven
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header />
 
-      <main className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-3xl font-bold text-gray-100">
+      <main className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+        <div className="text-left">
+          <h1 className="text-m font-medium text-gray-600">
             Hand vs. Hand
           </h1>
         </div>
 
         <div className="max-w-6xl mx-auto">
           {/* Problem Display */}
-          <div className="mb-12">
+          <div className="my-8">
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-8 sm:space-y-0 sm:space-x-16">
-              {/* First Hand */}
-              <div className="text-center">
+              {/* Second Hand - appears first on mobile, left on desktop */}
+              <div className="text-center order-1 sm:order-2">
                 <HandDisplay 
-                  title="Your Hand" 
-                  cards={[
-                    parseCard(currentProblem.hand1.card1),
-                    parseCard(currentProblem.hand1.card2)
-                  ]} 
-                />
-                <div className="mt-4 text-2xl font-bold text-blue-400">
-                  {Math.round(userEstimate)}%
-                </div>
-              </div>
-
-              {/* VS */}
-              <div className="text-center">
-                <div className="text-3xl font-bold text-gray-400">VS</div>
-              </div>
-
-              {/* Second Hand */}
-              <div className="text-center">
-                <HandDisplay 
-                  title="Their Hand" 
+                  title="Villain" 
                   cards={[
                     parseCard(currentProblem.hand2.card1),
                     parseCard(currentProblem.hand2.card2)
@@ -140,18 +106,32 @@ export default function HandVsHandPage() {
                   {Math.round(100 - userEstimate)}%
                 </div>
               </div>
+
+              {/* First Hand - appears second on mobile, right on desktop */}
+              <div className="text-center order-2 sm:order-1">
+                <HandDisplay 
+                  title="Hero" 
+                  cards={[
+                    parseCard(currentProblem.hand1.card1),
+                    parseCard(currentProblem.hand1.card2)
+                  ]} 
+                />
+                <div className="mt-4 text-2xl font-bold text-blue-400">
+                  {Math.round(userEstimate)}%
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Equity Estimation */}
-          <div className="mb-8">
+          
             <EquitySlider 
               value={userEstimate} 
               onChange={handleEstimateChange}
               correctAnswer={correctAnswer}
               showResult={showResult}
             />
-          </div>
+
 
           {/* Submit/Next Button */}
           <div className="mb-8">

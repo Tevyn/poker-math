@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Header from '../../components/Header';
 import EquitySlider from '../../components/EquitySlider';
 import SubmitButton from '../../components/SubmitButton';
 import NextProblemButton from '../../components/NextProblemButton';
@@ -58,51 +59,30 @@ export default function BreakevenPage() {
 
   return (
     <div className="min-h-screen bg-gray-950">
-      <header className="bg-gray-900 shadow-sm border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <Link href="/" className="text-2xl font-bold text-gray-100 hover:text-gray-300 transition-colors">
-              Poker Equity Estimation
-            </Link>
-            <nav className="flex space-x-6">
-              <Link href="/hand-vs-hand" className="text-gray-300 hover:text-gray-100 transition-colors">
-                Hand vs. Hand
-              </Link>
-              <Link href="/breakeven" className="text-blue-400 font-medium">
-                Breakeven
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header />
 
-      <main className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-3xl font-bold text-gray-100">
+      <main className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+        <div className="text-left mb-2">
+          <h1 className="text-m font-medium text-gray-600">
             Breakeven Percentage
           </h1>
         </div>
 
         <div className="max-w-6xl mx-auto">
           {/* Problem Display */}
-          <div className="mb-12">
+          <div className="my-8">
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-8 sm:space-y-0 sm:space-x-16">
               {/* Pot and Bet Information */}
               <div className="text-center">
-                <div className="text-2xl font-bold text-gray-100 mb-4">Pot Size</div>
+                <div className="text-lg font-bold text-gray-100 mb-4">Pot Size</div>
                 <div className="text-4xl font-bold text-green-400">
                   ${currentProblem.pot}
                 </div>
               </div>
 
-              {/* VS */}
-              <div className="text-center">
-                <div className="text-3xl font-bold text-gray-400">VS</div>
-              </div>
-
               {/* Opponent's Bet */}
-              <div className="text-center">
-                <div className="text-2xl font-bold text-gray-100 mb-4">Opponent&apos;s Bet</div>
+              <div className="text-center my-8">
+                <div className="text-lg font-bold text-gray-100 mb-4">Opponent&apos;s Bet</div>
                 <div className="text-4xl font-bold text-red-400">
                   ${currentProblem.opponentBet}
                 </div>
@@ -111,8 +91,9 @@ export default function BreakevenPage() {
           </div>
 
           {/* Breakeven Calculation Display */}
-          <div className="mb-8 text-center">
-            <div className="text-2xl font-bold text-blue-400">
+          <div className="text-center">
+            <div className="text-lg font-bold text-gray-100 mb-4">Breakeven Percentage</div>
+            <div className="text-4xl font-bold text-blue-400">
               {Math.round(userEstimate)}%
             </div>
           </div>

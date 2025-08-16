@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Poker Equity Estimation",
+  title: "Poker Math",
   description: "Practice estimating poker hand equity with interactive problems",
 };
 
