@@ -7,6 +7,14 @@ interface EquitySliderProps {
   showResult?: boolean;
   isCorrect?: boolean;
   className?: string;
+  // New flexible props
+  min?: number;
+  max?: number;
+  step?: number;
+  labelFormat?: 'percentage' | 'ratio';
+  tolerance?: number;
+  customTicks?: number[];
+  customLabels?: string[];
 }
 
 export default function EquitySlider({ 
@@ -15,11 +23,35 @@ export default function EquitySlider({
   correctAnswer, 
   showResult = false, 
   isCorrect = false,
-  className = "" 
+  className = "",
+  // Default values for backward compatibility
+  min = 5,
+  max = 95,
+  step = 1,
+  labelFormat = 'percentage',
+  tolerance = 5,
+  customTicks,
+  customLabels
 }: EquitySliderProps) {
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseFloat(e.target.value);
     onChange(newValue);
+  };
+
+  // Calculate tolerance range based on current value and tolerance
+  const toleranceLeft = Math.max(min, value - tolerance);
+  const toleranceRight = Math.min(max, value + tolerance);
+  const toleranceWidth = toleranceRight - toleranceLeft;
+
+  // Generate ticks and labels
+  const ticks = customTicks || Array.from({ length: Math.floor((max - min) / step) + 1 }, (_, i) => min + i * step);
+  const labels = customLabels || ticks.map(tick => 
+    labelFormat === 'percentage' ? `${Math.round(tick)}%` : `${tick}:1`
+  );
+
+  // Calculate positions as percentages of the slider range
+  const getPositionPercentage = (value: number) => {
+    return ((value - min) / (max - min)) * 100;
   };
 
   return (
@@ -39,11 +71,11 @@ export default function EquitySlider({
               isCorrect ? 'text-green-400' : 'text-yellow-400'
             }`}
             style={{
-              left: `${correctAnswer}%`,
+              left: `${getPositionPercentage(correctAnswer)}%`,
               bottom: '100%'
             }}
           >
-            {Math.round(correctAnswer)}%
+            {labelFormat === 'percentage' ? `${Math.round(correctAnswer)}%` : `${correctAnswer}:1`}
           </div>
         </div>
       )}
@@ -55,8 +87,8 @@ export default function EquitySlider({
           <div 
             className="absolute h-3 bg-blue-200 rounded-full opacity-30"
             style={{
-              left: `${Math.max(0, value - 5)}%`,
-              width: `${Math.min(100, value + 5) - Math.max(0, value - 5)}%`
+              left: `${getPositionPercentage(toleranceLeft)}%`,
+              width: `${getPositionPercentage(toleranceRight) - getPositionPercentage(toleranceLeft)}%`
             }}
           />
           
@@ -66,7 +98,7 @@ export default function EquitySlider({
               showResult ? 'bg-blue-500' : 'bg-blue-500'
             }`}
             style={{
-              left: `${value}%`,
+              left: `${getPositionPercentage(value)}%`,
               width: '2px',
               transform: 'translateX(-50%)'
             }}
@@ -79,7 +111,7 @@ export default function EquitySlider({
                 isCorrect ? 'bg-green-400' : 'bg-yellow-400'
               }`}
               style={{
-                left: `${correctAnswer}%`,
+                left: `${getPositionPercentage(correctAnswer)}%`,
                 width: '4px',
                 transform: 'translateX(-50%)'
               }}
@@ -87,32 +119,32 @@ export default function EquitySlider({
           )}
         </div>
 
-        {/* 5% Ticks */}
+        {/* Ticks */}
         <div className="relative w-full mt-0">
-          {Array.from({ length: 21 }, (_, i) => i * 5).map((tick) => (
+          {ticks.map((tick) => (
             <div
               key={tick}
               className="absolute w-px h-2 bg-gray-500"
               style={{
-                left: `${tick}%`,
+                left: `${getPositionPercentage(tick)}%`,
                 transform: 'translateX(-50%)'
               }}
             />
           ))}
         </div>
 
-        {/* Percentage Labels below tick marks */}
+        {/* Labels below tick marks */}
         <div className="relative w-full mt-3">
-          {[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((tick) => (
+          {ticks.map((tick, index) => (
             <div
               key={tick}
               className="absolute text-xs text-gray-400 pt-1"
               style={{
-                left: `${tick}%`,
+                left: `${getPositionPercentage(tick)}%`,
                 transform: 'translateX(-50%)'
               }}
             >
-              {tick}%
+              {labels[index]}
             </div>
           ))}
         </div>
@@ -120,9 +152,9 @@ export default function EquitySlider({
         {/* Slider Input */}
         <input
           type="range"
-          min="5"
-          max="95"
-          step="1"
+          min={min}
+          max={max}
+          step={step}
           value={value}
           onChange={handleSliderChange}
           onMouseDown={() => {}}

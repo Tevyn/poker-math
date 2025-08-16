@@ -6,13 +6,13 @@ import Header from '../../components/Header';
 import EquitySlider from '../../components/EquitySlider';
 import SubmitButton from '../../components/SubmitButton';
 import NextProblemButton from '../../components/NextProblemButton';
-import { BreakevenProblemManager } from '../../utils/breakevenProblemManager';
-import { BreakevenProblem } from '../../types/breakevenProblems';
+import { PotOddsProblemManager } from '../../utils/potOddsProblemManager';
+import { PotOddsProblem } from '../../types/potOddsProblems';
 
-export default function BreakevenPage() {
-  const [problemManager] = useState(() => new BreakevenProblemManager());
-  const [currentProblem, setCurrentProblem] = useState<BreakevenProblem | null>(null);
-  const [userEstimate, setUserEstimate] = useState(50);
+export default function PotOddsPage() {
+  const [problemManager] = useState(() => new PotOddsProblemManager());
+  const [currentProblem, setCurrentProblem] = useState<PotOddsProblem | null>(null);
+  const [userEstimate, setUserEstimate] = useState(3);
   const [showResult, setShowResult] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [correctAnswer, setCorrectAnswer] = useState<number | null>(null);
@@ -23,15 +23,15 @@ export default function BreakevenPage() {
     setCurrentProblem(problem);
     
     // Calculate correct answer
-    const breakeven = problemManager.calculateCurrentProblemBreakeven();
-    setCorrectAnswer(breakeven);
+    const potOdds = problemManager.calculateCurrentProblemPotOdds();
+    setCorrectAnswer(potOdds);
   }, [problemManager]);
 
   const handleSubmit = () => {
     if (!correctAnswer) return;
     
     const difference = Math.abs(userEstimate - correctAnswer);
-    const tolerance = 5;
+    const tolerance = 0.5; // 0.5 ratio difference tolerance
     setIsCorrect(difference <= tolerance);
     setShowResult(true);
   };
@@ -41,10 +41,10 @@ export default function BreakevenPage() {
     setCurrentProblem(problem);
     
     // Calculate correct answer for new problem
-    const breakeven = problemManager.calculateCurrentProblemBreakeven();
-    setCorrectAnswer(breakeven);
+    const potOdds = problemManager.calculateCurrentProblemPotOdds();
+    setCorrectAnswer(potOdds);
     
-    setUserEstimate(50);
+    setUserEstimate(3);
     setShowResult(false);
     setIsCorrect(false);
   };
@@ -64,7 +64,7 @@ export default function BreakevenPage() {
       <main className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
         <div className="text-left mb-2">
           <h1 className="text-m font-medium text-gray-600">
-            Breakeven Percentage
+            Pot Odds
           </h1>
         </div>
 
@@ -72,7 +72,7 @@ export default function BreakevenPage() {
           {/* Problem Display */}
           <div className="my-8">
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-8 sm:space-y-0 sm:space-x-16">
-              {/* Pot and Bet Information */}
+              {/* Pot Information */}
               <div className="text-center">
                 <div className="text-lg font-bold text-gray-100 mb-4">Pot Size</div>
                 <div className="text-4xl font-bold text-green-400">
@@ -80,25 +80,25 @@ export default function BreakevenPage() {
                 </div>
               </div>
 
-              {/* Opponent's Bet */}
+              {/* Amount to Call */}
               <div className="text-center my-8">
-                <div className="text-lg font-bold text-gray-100 mb-4">Opponent&apos;s Bet</div>
+                <div className="text-lg font-bold text-gray-100 mb-4">Amount to Call</div>
                 <div className="text-4xl font-bold text-red-400">
-                  ${currentProblem.opponentBet}
+                  ${currentProblem.callAmount}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Breakeven Calculation Display */}
+          {/* Pot Odds Display */}
           <div className="text-center">
-            <div className="text-lg font-bold text-gray-100 mb-4">Breakeven Percentage</div>
+            <div className="text-lg font-bold text-gray-100 mb-4">Pot Odds</div>
             <div className="text-4xl font-bold text-blue-400">
-              {Math.round(userEstimate)}%
+              {userEstimate}:1
             </div>
           </div>
 
-          {/* Breakeven Estimation Slider */}
+          {/* Pot Odds Estimation Slider */}
           <div className="mb-8">
             <EquitySlider 
               value={userEstimate} 
@@ -106,12 +106,14 @@ export default function BreakevenPage() {
               correctAnswer={correctAnswer}
               showResult={showResult}
               isCorrect={isCorrect}
-              // Breakeven specific configuration (using defaults for backward compatibility)
-              min={5}
-              max={95}
-              step={1}
-              labelFormat="percentage"
-              tolerance={5}
+              // Pot odds specific configuration
+              min={1}
+              max={12}
+              step={0.1}
+              labelFormat="ratio"
+              tolerance={0.5}
+              customTicks={[1, 2, 3, 4, 5, 6, 8, 10, 12]}
+              customLabels={['1:1', '2:1', '3:1', '4:1', '5:1', '6:1', '8:1', '10:1', '12:1']}
             />
           </div>
 

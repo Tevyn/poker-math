@@ -97,6 +97,21 @@ export default function Header() {
                 </div>
               </div>
 
+              {/* Hand Evaluation Category */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wide mb-4">
+                  Hand Evaluation
+                </h3>
+                <div className="space-y-3">
+                  <div className="text-gray-500 py-2 text-lg">
+                    Who Wins
+                  </div>
+                  <div className="text-gray-500 py-2 text-lg">
+                    Best Hand
+                  </div>
+                </div>
+              </div>
+
               {/* Metrics Category */}
               <div>
                 <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wide mb-4">
@@ -106,6 +121,11 @@ export default function Header() {
                   <Link href="/breakeven" className="block" onClick={() => setIsMenuOpen(false)}>
                     <div className="text-gray-100 hover:text-gray-300 transition-colors py-2 text-lg">
                       Breakeven Facing A Raise
+                    </div>
+                  </Link>
+                  <Link href="/pot-odds" className="block" onClick={() => setIsMenuOpen(false)}>
+                    <div className="text-gray-100 hover:text-gray-300 transition-colors py-2 text-lg">
+                      Pot Odds
                     </div>
                   </Link>
                   <div className="text-gray-500 py-2 text-lg">
