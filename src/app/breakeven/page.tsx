@@ -102,7 +102,7 @@ export default function BreakevenPage() {
 
               {/* Opponent's Bet */}
               <div className="text-center">
-                <div className="text-2xl font-bold text-gray-100 mb-4">Opponent's Bet</div>
+                <div className="text-2xl font-bold text-gray-100 mb-4">Opponent&apos;s Bet</div>
                 <div className="text-4xl font-bold text-red-400">
                   ${currentProblem.opponentBet}
                 </div>
