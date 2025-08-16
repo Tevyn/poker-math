@@ -92,9 +92,9 @@ export default function HandVsHandPage() {
         <div className="max-w-6xl mx-auto">
           {/* Problem Display */}
           <div className="my-8">
-            <div className="flex flex-col sm:flex-row justify-center items-center space-y-8 sm:space-y-0 sm:space-x-16">
+            <div className="flex flex-col sm:flex-row justify-center items-center space-y-8 sm:space-y-0 sm:gap-16">
               {/* Second Hand - appears first on mobile, left on desktop */}
-              <div className="text-center order-1 sm:order-2">
+              <div className="order-1 sm:order-2">
                 <HandDisplay 
                   title="Villain" 
                   cards={[
@@ -102,13 +102,13 @@ export default function HandVsHandPage() {
                     parseCard(currentProblem.hand2.card2)
                   ]} 
                 />
-                <div className="mt-4 text-2xl font-bold text-gray-400">
+                <div className="mt-4 text-2xl font-bold text-gray-400 text-center">
                   {Math.round(100 - userEstimate)}%
                 </div>
               </div>
 
               {/* First Hand - appears second on mobile, right on desktop */}
-              <div className="text-center order-2 sm:order-1">
+              <div className="order-2 sm:order-1">
                 <HandDisplay 
                   title="Hero" 
                   cards={[
@@ -116,7 +116,7 @@ export default function HandVsHandPage() {
                     parseCard(currentProblem.hand1.card2)
                   ]} 
                 />
-                <div className="mt-4 text-2xl font-bold text-blue-400">
+                <div className="mt-4 text-2xl font-bold text-blue-400 text-center">
                   {Math.round(userEstimate)}%
                 </div>
               </div>
@@ -124,13 +124,14 @@ export default function HandVsHandPage() {
           </div>
 
           {/* Equity Estimation */}
-          
+          <div className="mb-8">
             <EquitySlider 
               value={userEstimate} 
               onChange={handleEstimateChange}
               correctAnswer={correctAnswer}
               showResult={showResult}
             />
+          </div>
 
 
           {/* Submit/Next Button */}
