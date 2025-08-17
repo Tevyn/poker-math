@@ -7,6 +7,7 @@ interface HandSelectionGridProps {
   selectedHandIndex: number | null;
   onHandSelect: (index: number) => void;
   correctAnswerIndex: number | null;
+  tieIndices?: number[]; // Add tie indices for handling multiple winners
   className?: string;
 }
 
@@ -15,6 +16,7 @@ export default function HandSelectionGrid({
   selectedHandIndex, 
   onHandSelect, 
   correctAnswerIndex,
+  tieIndices = [], // Default to empty array
   className = "" 
 }: HandSelectionGridProps) {
   return (
@@ -26,6 +28,7 @@ export default function HandSelectionGrid({
             playerHand={playerHand}
             isSelected={selectedHandIndex === index}
             isCorrectAnswer={correctAnswerIndex === index}
+            isWinner={correctAnswerIndex === index || tieIndices.includes(index)} // Check if this hand is a winner
             onClick={() => onHandSelect(index)}
             className="w-full"
           />

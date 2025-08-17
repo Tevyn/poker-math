@@ -6,6 +6,7 @@ interface PlayerHandCardProps {
   playerHand: PlayerHand;
   isSelected: boolean;
   isCorrectAnswer: boolean;
+  isWinner: boolean; // New prop to handle both single winner and ties
   onClick: () => void;
   className?: string;
 }
@@ -32,6 +33,7 @@ export default function PlayerHandCard({
   playerHand, 
   isSelected, 
   isCorrectAnswer,
+  isWinner, // Use the new isWinner prop
   onClick, 
   className = "" 
 }: PlayerHandCardProps) {
@@ -43,7 +45,7 @@ export default function PlayerHandCard({
   let borderStyle = 'border-gray-700 bg-gray-800 hover:border-gray-600 hover:bg-gray-700';
   let textStyle = 'text-gray-300';
   
-  if (isCorrectAnswer) {
+  if (isWinner) { // Use isWinner instead of isCorrectAnswer for green highlighting
     borderStyle = 'border-green-500 bg-green-900/20 shadow-lg shadow-green-500/25';
     textStyle = 'text-green-300';
   } else if (isSelected) {

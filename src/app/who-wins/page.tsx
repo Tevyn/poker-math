@@ -87,9 +87,6 @@ export default function WhoWinsPage() {
           <h1 className="text-m font-medium text-gray-600">
             Who Wins?
           </h1>
-          <div className="text-xs text-yellow-400 mt-1">
-            ⚠️ Note: We're currently working through some edge cases in hand evaluation
-          </div>
         </div>
 
         <div className="max-w-6xl mx-auto">
@@ -105,6 +102,7 @@ export default function WhoWinsPage() {
               selectedHandIndex={selectedHandIndex}
               onHandSelect={handleHandSelect}
               correctAnswerIndex={result?.correctAnswer ?? null}
+              tieIndices={result?.tieIndices ?? []} // Pass tie indices for proper highlighting
             />
           </div>
 
