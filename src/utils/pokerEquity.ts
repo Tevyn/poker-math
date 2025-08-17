@@ -11,6 +11,13 @@ export interface EquityResult {
   tiePercentage: number;
 }
 
+export interface MultiHandEquityResult {
+  handEquities: number[];
+  winners: number[];
+  isTie: boolean;
+  tieIndices: number[];
+}
+
 /**
  * Calculate equity between two poker hands (pre-flop)
  * @param hand1 - First hand (two cards)
@@ -41,6 +48,58 @@ export function calculateHandVsHandEquity(hand1: PokerHand, hand2: PokerHand): E
   } catch (error) {
     console.error('Error calculating poker equity:', error);
     throw new Error('Failed to calculate poker equity');
+  }
+}
+
+/**
+ * Calculate equity for multiple hands with a board to determine winners
+ * @param playerHands - Array of player hands, each with 2 cards
+ * @param board - Array of 3-5 community cards
+ * @returns Equity results showing which hands win
+ */
+export function calculateMultiHandEquity(
+  playerHands: { cards: [string, string] }[],
+  board: string[]
+): MultiHandEquityResult {
+  try {
+    // Convert hands to CardGroup format
+    const handGroups = playerHands.map(hand => 
+      CardGroup.fromString(`${hand.cards[0]}${hand.cards[1]}`)
+    );
+    
+    // Convert board to CardGroup format
+    const boardGroup = board.length > 0 ? CardGroup.fromString(board.join('')) : undefined;
+    
+    // Calculate odds with board cards
+    const result = OddsCalculator.calculate(handGroups, boardGroup);
+    
+    // Extract equity percentages for each hand
+    const handEquities = result.equities.map(equity => 
+      Math.round(equity.getEquity() * 100) / 100
+    );
+    
+    // Find the highest equity
+    const maxEquity = Math.max(...handEquities);
+    
+    // Find all hands with the maximum equity (winners)
+    const winners: number[] = [];
+    handEquities.forEach((equity, index) => {
+      if (equity === maxEquity) {
+        winners.push(index);
+      }
+    });
+    
+    const isTie = winners.length > 1;
+    
+    return {
+      handEquities,
+      winners: [winners[0]], // For display purposes, use first winner
+      isTie,
+      tieIndices: winners
+    };
+  } catch (error) {
+    console.error('Error calculating multi-hand equity:', error);
+    throw new Error('Failed to calculate multi-hand equity');
   }
 }
 
