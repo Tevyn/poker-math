@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Header from '../../components/Header';
+import PageWrapper from '../../components/PageWrapper';
 import EquitySlider from '../../components/EquitySlider';
 import SubmitButton from '../../components/SubmitButton';
 import NextProblemButton from '../../components/NextProblemButton';
@@ -58,79 +57,62 @@ export default function BreakevenPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950">
-      <Header />
-
-      <main className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-        <div className="text-left mb-2">
-          <h1 className="text-m font-medium text-gray-600">
-            Breakeven Percentage
-          </h1>
-        </div>
-
-        <div className="max-w-6xl mx-auto">
-          {/* Problem Display */}
-          <div className="my-8">
-            <div className="flex flex-col sm:flex-row justify-center items-center space-y-8 sm:space-y-0 sm:space-x-16">
-              {/* Pot and Bet Information */}
-              <div className="text-center">
-                <div className="text-lg font-bold text-gray-100 mb-4">Pot Size</div>
-                <div className="text-4xl font-bold text-green-400">
-                  ${currentProblem.pot}
-                </div>
-              </div>
-
-              {/* Opponent's Bet */}
-              <div className="text-center my-8">
-                <div className="text-lg font-bold text-gray-100 mb-4">Opponent&apos;s Bet</div>
-                <div className="text-4xl font-bold text-red-400">
-                  ${currentProblem.opponentBet}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Breakeven Calculation Display */}
+    <PageWrapper title="Breakeven Percentage">
+      {/* Problem Display */}
+      <div className="my-8">
+        <div className="flex flex-col sm:flex-row justify-center items-center space-y-8 sm:space-y-0 sm:space-x-16">
+          {/* Pot and Bet Information */}
           <div className="text-center">
-            <div className="text-lg font-bold text-gray-100 mb-4">Breakeven Percentage</div>
-            <div className="text-4xl font-bold text-blue-400">
-              {Math.round(userEstimate)}%
+            <div className="text-lg font-bold text-gray-100 mb-4">Pot Size</div>
+            <div className="text-4xl font-bold text-green-400">
+              ${currentProblem.pot}
             </div>
           </div>
 
-          {/* Breakeven Estimation Slider */}
-          <div className="mb-8">
-            <EquitySlider 
-              value={userEstimate} 
-              onChange={handleEstimateChange}
-              correctAnswer={correctAnswer}
-              showResult={showResult}
-              isCorrect={isCorrect}
-              // Breakeven specific configuration (using defaults for backward compatibility)
-              min={5}
-              max={95}
-              step={1}
-              labelFormat="percentage"
-              tolerance={5}
-            />
-          </div>
-
-          {/* Submit/Next Button */}
-          <div className="mb-8">
-            <div className="text-center">
-              {!showResult ? (
-                <SubmitButton 
-                  onSubmit={handleSubmit}
-                />
-              ) : (
-                <NextProblemButton 
-                  onNextProblem={handleNextProblem}
-                />
-              )}
+          {/* Opponent's Bet */}
+          <div className="text-center my-8">
+            <div className="text-lg font-bold text-gray-100 mb-4">Opponent&apos;s Bet</div>
+            <div className="text-4xl font-bold text-red-400">
+              ${currentProblem.opponentBet}
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+
+      {/* Breakeven Calculation Display */}
+      <div className="text-center">
+        <div className="text-lg font-bold text-gray-100 mb-4">Breakeven Percentage</div>
+        <div className="text-4xl font-bold text-blue-400">
+          {Math.round(userEstimate)}%
+        </div>
+      </div>
+
+      {/* Breakeven Estimation Slider */}
+      <div className="mb-8">
+        <EquitySlider 
+          value={userEstimate} 
+          onChange={handleEstimateChange}
+          correctAnswer={correctAnswer}
+          showResult={showResult}
+          isCorrect={isCorrect}
+          mode="percentage"
+        />
+      </div>
+
+      {/* Submit/Next Button */}
+      <div className="mb-8">
+        <div className="text-center">
+          {!showResult ? (
+            <SubmitButton 
+              onSubmit={handleSubmit}
+            />
+          ) : (
+            <NextProblemButton 
+              onNextProblem={handleNextProblem}
+            />
+          )}
+        </div>
+      </div>
+    </PageWrapper>
   );
 }

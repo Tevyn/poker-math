@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Header from '../../components/Header';
+import PageWrapper from '../../components/PageWrapper';
 import HandDisplay from '../../components/HandDisplay';
 import EquitySlider from '../../components/EquitySlider';
 import SubmitButton from '../../components/SubmitButton';
@@ -79,77 +78,66 @@ export default function HandVsHandPage() {
   const correctHand2Equity = 100 - correctAnswer;
 
   return (
-    <div className="min-h-screen bg-gray-950">
-      <Header />
-
-      <main className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-        <div className="text-left">
-          <h1 className="text-m font-medium text-gray-600">
-            Hand vs. Hand
-          </h1>
-        </div>
-
-        <div className="max-w-6xl mx-auto">
-          {/* Problem Display */}
-          <div className="my-8">
-            <div className="flex flex-col sm:flex-row justify-center items-center space-y-8 sm:space-y-0 sm:gap-16">
-              {/* Second Hand - appears first on mobile, left on desktop */}
-              <div className="order-1 sm:order-2">
-                <HandDisplay 
-                  title="Villain" 
-                  cards={[
-                    parseCard(currentProblem.hand2.card1),
-                    parseCard(currentProblem.hand2.card2)
-                  ]} 
-                />
-                <div className="mt-4 text-2xl font-bold text-gray-400 text-center">
-                  {Math.round(100 - userEstimate)}%
-                </div>
-              </div>
-
-              {/* First Hand - appears second on mobile, right on desktop */}
-              <div className="order-2 sm:order-1">
-                <HandDisplay 
-                  title="Hero" 
-                  cards={[
-                    parseCard(currentProblem.hand1.card1),
-                    parseCard(currentProblem.hand1.card2)
-                  ]} 
-                />
-                <div className="mt-4 text-2xl font-bold text-blue-400 text-center">
-                  {Math.round(userEstimate)}%
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Equity Estimation */}
-          <div className="mb-8">
-            <EquitySlider 
-              value={userEstimate} 
-              onChange={handleEstimateChange}
-              correctAnswer={correctAnswer}
-              showResult={showResult}
+    <PageWrapper title="Hand vs. Hand">
+      {/* Problem Display */}
+      <div className="my-8">
+        <div className="flex flex-col sm:flex-row justify-center items-center space-y-8 sm:space-y-0 sm:gap-16">
+          {/* Second Hand - appears first on mobile, left on desktop */}
+          <div className="order-1 sm:order-2">
+            <HandDisplay 
+              title="Villain" 
+              cards={[
+                parseCard(currentProblem.hand2.card1),
+                parseCard(currentProblem.hand2.card2)
+              ]} 
             />
+            <div className="mt-4 text-2xl font-bold text-gray-400 text-center">
+              {Math.round(100 - userEstimate)}%
+            </div>
           </div>
 
-
-          {/* Submit/Next Button */}
-          <div className="mb-8">
-            <div className="text-center">
-              {!showResult ? (
-                <SubmitButton 
-                  onSubmit={handleSubmit}
-                />
-              ) : (
-                <NextProblemButton 
-                  onNextProblem={handleNextProblem}
-                />
-              )}
+          {/* First Hand - appears second on mobile, right on desktop */}
+          <div className="order-2 sm:order-1">
+            <HandDisplay 
+              title="Hero" 
+              cards={[
+                parseCard(currentProblem.hand1.card1),
+                parseCard(currentProblem.hand1.card2)
+              ]} 
+            />
+            <div className="mt-4 text-2xl font-bold text-blue-400 text-center">
+              {Math.round(userEstimate)}%
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+
+      {/* Equity Estimation */}
+      <div className="mb-8">
+        <EquitySlider 
+          value={userEstimate} 
+          onChange={handleEstimateChange}
+          correctAnswer={correctAnswer}
+          showResult={showResult}
+          mode="percentage"
+        />
+      </div>
+
+
+      {/* Submit/Next Button */}
+      <div className="mb-8">
+        <div className="text-center">
+          {!showResult ? (
+            <SubmitButton 
+              onSubmit={handleSubmit}
+            />
+          ) : (
+            <NextProblemButton 
+              onNextProblem={handleNextProblem}
+            />
+          )}
+        </div>
+      </div>
+    </PageWrapper>
   );
 }

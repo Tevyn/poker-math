@@ -88,12 +88,21 @@ export default function Header() {
                   Preflop
                 </h3>
                 <div className="space-y-3">
-                  <div className="text-gray-500 py-2 text-lg">
-                    Range Practice
-                  </div>
-                  <div className="text-gray-500 py-2 text-lg">
-                    Hand Practice
-                  </div>
+                  <Link href="/range-study" className="block" onClick={() => setIsMenuOpen(false)}>
+                    <div className="text-gray-100 hover:text-gray-300 transition-colors py-2 text-lg">
+                      Range Study
+                    </div>
+                  </Link>
+                  <Link href="/range-practice" className="block" onClick={() => setIsMenuOpen(false)}>
+                    <div className="text-gray-100 hover:text-gray-300 transition-colors py-2 text-lg">
+                      Range Practice
+                    </div>
+                  </Link>
+                  <Link href="/hand-practice" className="block" onClick={() => setIsMenuOpen(false)}>
+                    <div className="text-gray-100 hover:text-gray-300 transition-colors py-2 text-lg">
+                      Hand Practice
+                    </div>
+                  </Link>
                 </div>
               </div>
 
@@ -103,9 +112,11 @@ export default function Header() {
                   Hand Evaluation
                 </h3>
                 <div className="space-y-3">
-                  <div className="text-gray-500 py-2 text-lg">
-                    Who Wins
-                  </div>
+                  <Link href="/who-wins" className="block" onClick={() => setIsMenuOpen(false)}>
+                    <div className="text-gray-100 hover:text-gray-300 transition-colors py-2 text-lg">
+                      Who Wins
+                    </div>
+                  </Link>
                   <div className="text-gray-500 py-2 text-lg">
                     Best Hand
                   </div>

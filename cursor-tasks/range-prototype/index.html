@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker Trainer - Range Study</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Mobile Navigation Overlay -->
+        <div class="nav-overlay" id="navOverlay"></div>
+        
+        <!-- Left Navigation -->
+        <nav class="left-nav" id="leftNav">
+            <div class="nav-header">
+                <h1>Poker Trainer</h1>
+            </div>
+            
+            <div class="nav-content">
+                <!-- Preflop Section -->
+                <div class="nav-section">
+                    <div class="nav-section-header">
+                        <span class="section-icon">🃏</span>
+                        <span class="section-title">Preflop</span>
+                    </div>
+                    <div class="nav-section-items">
+                        <button id="studyMode" class="nav-item active" data-mode="study">
+                            <span class="nav-icon">📚</span>
+                            <span class="nav-label">Study Ranges</span>
+                        </button>
+                        <button id="testMode" class="nav-item" data-mode="test">
+                            <span class="nav-icon">🎯</span>
+                            <span class="nav-label">Test whole ranges</span>
+                        </button>
+                        <button id="handpracticeMode" class="nav-item" data-mode="handpractice">
+                            <span class="nav-icon">🎰</span>
+                            <span class="nav-label">Hand practice</span>
+                        </button>
+                    </div>
+                </div>
+                
+
+            </div>
+            
+            <!-- Settings at bottom -->
+            <div class="nav-footer">
+                <button id="rangesMode" class="nav-item ranges-btn" data-mode="ranges">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Ranges</span>
+                </button>
+                <button id="settingsMode" class="nav-item settings-btn" data-mode="settings">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">Settings</span>
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Main Content Area -->
+        <div class="main-container">
+            <header class="main-header">
+                <div class="header-controls">
+                    <!-- Situation Selection -->
+                    <div class="header-selector-group">
+                        <label for="situationSelect" class="header-label">Situation:</label>
+                        <select id="situationSelect" class="header-select">
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    
+                    <!-- Practice Category Selection (shown only in handpractice mode) -->
+                    <div class="header-selector-group" id="headerPracticeCategoryGroup" style="display: none;">
+                        <label for="headerPracticeCategorySelect" class="header-label">Category:</label>
+                        <select id="headerPracticeCategorySelect" class="header-select">
+                            <option value="open_raises">Open Raises</option>
+                            <option value="facing_3bet">Facing 3-bet</option>
+                            <option value="facing_4bet">Facing 4-bet</option>
+                            <option value="facing_5bet_allin">Facing 5-bet All-in</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+            </header>
+            
+            <div class="main-content">
+
+            
+            <!-- Mode-specific Controls -->
+            <div class="mode-controls">
+                <!-- Study Mode Controls -->
+                <div id="studyControls" class="control-panel active">
+                    <!-- View toggle removed - now controlled from settings -->
+                </div>
+                
+                <!-- Test Mode Controls -->
+                <div id="testControls" class="control-panel">
+                    <div class="test-actions">
+                        <button id="clearBtn" class="action-btn secondary">Clear All</button>
+                        <button id="checkBtn" class="action-btn primary">Check Result</button>
+                    </div>
+                    <div class="test-results" id="testResults" style="display: none;">
+                        <div class="accuracy-display" id="accuracyDisplay"></div>
+                    </div>
+                </div>
+                
+                <!-- Ranges Mode Controls -->
+                <div id="rangesControls" class="control-panel">
+                    <div class="settings-content">
+                        <!-- Range Management Section -->
+                        <div class="settings-section">
+                            <h3 class="settings-section-title">Range Management</h3>
+                            <p class="settings-section-description">Create, edit, and organize your poker ranges</p>
+                            <div class="manage-actions">
+                                <button id="newRangeBtn" class="action-btn primary">New Range</button>
+                                <button id="editRangeBtn" class="action-btn secondary">Edit Range</button>
+                                <button id="deleteRangeBtn" class="action-btn danger">Delete Range</button>
+                            </div>
+                            <div class="edit-actions" id="editActions" style="display: none;">
+                                <div class="action-selector">
+                                    <label>Select Action:</label>
+                                    <button id="raiseAction" class="action-option raise-action active">Raise</button>
+                                    <button id="callAction" class="action-option call-action">Call</button>
+                                    <span class="fold-note">(Click hands to set fold)</span>
+                                </div>
+                                <div class="save-actions">
+                                    <button id="saveRangeBtn" class="action-btn primary">Save Changes</button>
+                                    <button id="cancelEditBtn" class="action-btn secondary">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <!-- Hand Practice Mode Controls -->
+                <div id="handpracticeControls" class="control-panel">
+                    <div class="hand-practice-content">
+
+
+                        <!-- Multi-Range Practice Interface -->
+                        <div class="multi-range-practice" id="multiRangePractice" style="display: none;">
+                            <div class="current-hand-display" id="currentHandDisplay">--</div>
+                            
+                            <div class="ranges-list" id="rangesList">
+                                <!-- Dynamically populated with range rows -->
+                            </div>
+                            
+                            <div class="practice-actions">
+                                <button id="checkMultiRangeBtn" class="action-btn primary">Check Answers</button>
+                                <button id="nextMultiHandBtn" class="action-btn secondary" style="display: none;">Next Hand</button>
+                            </div>
+
+                            <div class="multi-range-stats" id="multiRangeStats"></div>
+                        </div>
+
+                        <div class="practice-start" id="practiceStart">
+                            <p>Select a practice category in the header and click "Start Practice" to begin multi-range practice.</p>
+                            <button id="startPracticeBtn" class="action-btn primary">Start Practice</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Settings Mode Controls -->
+                <div id="settingsControls" class="control-panel">
+                    <div class="settings-content">
+                        <!-- View Settings Section -->
+                        <div class="settings-section">
+                            <h3 class="settings-section-title">View Settings</h3>
+                            <p class="settings-section-description">Configure your default view preferences</p>
+                            <div class="settings-options">
+                                <div class="setting-item">
+                                    <label class="setting-label">Default View Mode:</label>
+                                    <select id="defaultViewSelect" class="setting-select">
+                                        <option value="pattern">Pattern View</option>
+                                        <option value="grid">Grid View</option>
+                                    </select>
+                                </div>
+                                <div class="setting-item">
+                                    <label class="setting-label">Current View:</label>
+                                    <div class="view-toggle">
+                                        <button id="gridViewBtn" class="view-btn" data-view="grid">
+                                            <span class="view-icon">⊞</span>
+                                            <span class="view-label">Grid View</span>
+                                        </button>
+                                        <button id="patternViewBtn" class="view-btn" data-view="pattern">
+                                            <span class="view-icon">◢</span>
+                                            <span class="view-label">Pattern View</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Range Management Section -->
+                        <div class="settings-section">
+                            <h3 class="settings-section-title">Range Management</h3>
+                            <p class="settings-section-description">Tools for analyzing and optimizing your saved ranges</p>
+                            <div class="settings-options">
+                                <div class="setting-item">
+                                    <button id="analyzeRangesBtn" class="action-btn secondary" style="margin-right: 10px;">
+                                        Analyze Duplicates
+                                    </button>
+                                    <button id="deduplicateRangesBtn" class="action-btn primary">
+                                        Remove Duplicates
+                                    </button>
+                                </div>
+                                <div class="setting-item">
+                                    <small style="color: #888; font-style: italic;">
+                                        Analysis results will appear in the browser console (F12 → Console)
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="range-container">
+            <div class="range-grid" id="rangeGrid">
+                <!-- Grid will be generated by JavaScript -->
+            </div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color raise"></div>
+                <span>Raise</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color call"></div>
+                <span>Call</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color fold"></div>
+                <span>Fold (default)</span>
+            </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

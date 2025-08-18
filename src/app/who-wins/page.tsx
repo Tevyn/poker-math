@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Header from '../../components/Header';
+import PageWrapper from '../../components/PageWrapper';
 import BoardDisplay from '../../components/BoardDisplay';
 import HandSelectionGrid from '../../components/HandSelectionGrid';
 import SubmitButton from '../../components/SubmitButton';
@@ -69,74 +69,59 @@ export default function WhoWinsPage() {
 
   if (!currentProblem) {
     return (
-      <div className="min-h-screen bg-gray-950">
-        <Header />
-        <main className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-          <div className="text-center text-gray-300">Loading...</div>
-        </main>
-      </div>
+      <PageWrapper title="">
+        <div className="text-center text-gray-300">Loading...</div>
+      </PageWrapper>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-950">
-      <Header />
+    <PageWrapper title="Who Wins?">
+      {/* Board Display */}
+      <div className="my-8">
+        <BoardDisplay board={currentProblem.board} />
+      </div>
 
-      <main className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-        <div className="text-left mb-2">
-          <h1 className="text-m font-medium text-gray-600">
-            Who Wins?
-          </h1>
+      {/* Hand Selection Grid */}
+      <div className="mb-8">
+        <HandSelectionGrid
+          playerHands={currentProblem.playerHands}
+          selectedHandIndex={selectedHandIndex}
+          onHandSelect={handleHandSelect}
+          correctAnswerIndex={result?.correctAnswer ?? null}
+          tieIndices={result?.tieIndices ?? []} // Pass tie indices for proper highlighting
+        />
+      </div>
+
+      {/* Error Display */}
+      {error && (
+        <div className="mb-4 text-center">
+          <div className="text-red-400 text-sm">{error}</div>
         </div>
+      )}
 
-        <div className="max-w-6xl mx-auto">
-          {/* Board Display */}
-          <div className="my-8">
-            <BoardDisplay board={currentProblem.board} />
-          </div>
-
-          {/* Hand Selection Grid */}
-          <div className="mb-8">
-            <HandSelectionGrid
-              playerHands={currentProblem.playerHands}
-              selectedHandIndex={selectedHandIndex}
-              onHandSelect={handleHandSelect}
-              correctAnswerIndex={result?.correctAnswer ?? null}
-              tieIndices={result?.tieIndices ?? []} // Pass tie indices for proper highlighting
+      {/* Submit/Next Button */}
+      <div className="mb-8">
+        <div className="text-center">
+          {!showResult ? (
+            <SubmitButton 
+              onSubmit={handleSubmit}
+              disabled={selectedHandIndex === null || isLoading}
             />
-          </div>
-
-          {/* Error Display */}
-          {error && (
-            <div className="mb-4 text-center">
-              <div className="text-red-400 text-sm">{error}</div>
-            </div>
-          )}
-
-          {/* Submit/Next Button */}
-          <div className="mb-8">
-            <div className="text-center">
-              {!showResult ? (
-                <SubmitButton 
-                  onSubmit={handleSubmit}
-                  disabled={selectedHandIndex === null || isLoading}
-                />
-              ) : (
-                <NextProblemButton 
-                  onNextProblem={handleNextProblem}
-                />
-              )}
-            </div>
-          </div>
-
-          {/* Loading Indicator */}
-          {isLoading && (
-            <div className="text-center text-gray-400 text-sm">
-              Evaluating hands...
-            </div>
+          ) : (
+            <NextProblemButton 
+              onNextProblem={handleNextProblem}
+            />
           )}
         </div>
-      </main>
-    </div>
+      </div>
+
+      {/* Loading Indicator */}
+      {isLoading && (
+        <div className="text-center text-gray-400 text-sm">
+          Evaluating hands...
+        </div>
+      )}
+    </PageWrapper>
   );
 }

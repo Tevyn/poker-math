@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Header from '../../components/Header';
+import PageWrapper from '../../components/PageWrapper';
 import EquitySlider from '../../components/EquitySlider';
 import SubmitButton from '../../components/SubmitButton';
 import NextProblemButton from '../../components/NextProblemButton';
@@ -58,81 +57,70 @@ export default function PotOddsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950">
-      <Header />
-
-      <main className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-        <div className="text-left mb-2">
-          <h1 className="text-m font-medium text-gray-600">
-            Pot Odds
-          </h1>
-        </div>
-
-        <div className="max-w-6xl mx-auto">
-          {/* Problem Display */}
-          <div className="my-8">
-            <div className="flex flex-col sm:flex-row justify-center items-center space-y-8 sm:space-y-0 sm:space-x-16">
-              {/* Pot Information */}
-              <div className="text-center">
-                <div className="text-lg font-bold text-gray-100 mb-4">Pot Size</div>
-                <div className="text-4xl font-bold text-green-400">
-                  ${currentProblem.pot}
-                </div>
-              </div>
-
-              {/* Amount to Call */}
-              <div className="text-center my-8">
-                <div className="text-lg font-bold text-gray-100 mb-4">Amount to Call</div>
-                <div className="text-4xl font-bold text-red-400">
-                  ${currentProblem.callAmount}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Pot Odds Display */}
+    <PageWrapper title="Pot Odds">
+      {/* Problem Display */}
+      <div className="my-8">
+        <div className="flex flex-col sm:flex-row justify-center items-center space-y-8 sm:space-y-0 sm:space-x-16">
+          {/* Pot Information */}
           <div className="text-center">
-            <div className="text-lg font-bold text-gray-100 mb-4">Pot Odds</div>
-            <div className="text-4xl font-bold text-blue-400">
-              {userEstimate}:1
+            <div className="text-lg font-bold text-gray-100 mb-4">Pot Size</div>
+            <div className="text-4xl font-bold text-green-400">
+              ${currentProblem.pot}
             </div>
           </div>
 
-          {/* Pot Odds Estimation Slider */}
-          <div className="mb-8">
-            <EquitySlider 
-              value={userEstimate} 
-              onChange={handleEstimateChange}
-              correctAnswer={correctAnswer}
-              showResult={showResult}
-              isCorrect={isCorrect}
-              // Pot odds specific configuration
-              min={1}
-              max={12}
-              step={0.1}
-              labelFormat="ratio"
-              tolerance={0.5}
-              customTicks={[1, 2, 3, 4, 5, 6, 8, 10, 12]}
-              customLabels={['1:1', '2:1', '3:1', '4:1', '5:1', '6:1', '8:1', '10:1', '12:1']}
-            />
-          </div>
-
-          {/* Submit/Next Button */}
-          <div className="mb-8">
-            <div className="text-center">
-              {!showResult ? (
-                <SubmitButton 
-                  onSubmit={handleSubmit}
-                />
-              ) : (
-                <NextProblemButton 
-                  onNextProblem={handleNextProblem}
-                />
-              )}
+          {/* Amount to Call */}
+          <div className="text-center my-8">
+            <div className="text-lg font-bold text-gray-100 mb-4">Amount to Call</div>
+            <div className="text-4xl font-bold text-red-400">
+              ${currentProblem.callAmount}
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+
+      {/* Pot Odds Display */}
+      <div className="text-center">
+        <div className="text-lg font-bold text-gray-100 mb-4">Pot Odds</div>
+        <div className="text-4xl font-bold text-blue-400">
+          {userEstimate}:1
+        </div>
+      </div>
+
+      {/* Pot Odds Estimation Slider */}
+      <div className="mb-8">
+        <EquitySlider 
+          value={userEstimate} 
+          onChange={handleEstimateChange}
+          correctAnswer={correctAnswer}
+          showResult={showResult}
+          isCorrect={isCorrect}
+          mode="pot-odds"
+          // Pot odds specific configuration
+          min={1}
+          max={12}
+          step={0.1}
+          labelFormat="ratio"
+          tolerance={0.5}
+          customTicks={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
+          customLabels={['1:1', '2:1', '3:1', '4:1', '5:1', '6:1', '7:1', '8:1', '9:1', '10:1', '11:1', '12:1']}
+        />
+      </div>
+
+      {/* Submit/Next Button */}
+      <div className="mb-8">
+        <div className="text-center">
+          {!showResult ? (
+            <SubmitButton 
+              onSubmit={handleSubmit}
+            />
+          ) : (
+            <NextProblemButton 
+              onNextProblem={handleNextProblem}
+            />
+          )}
+        </div>
+      </div>
+    </PageWrapper>
   );
 }

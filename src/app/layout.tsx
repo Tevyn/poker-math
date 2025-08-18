@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Poker Math",
   description: "Practice estimating poker hand equity with interactive problems",
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({
