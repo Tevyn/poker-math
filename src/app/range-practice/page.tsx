@@ -79,7 +79,10 @@ export default function RangePracticePage() {
   };
 
   return (
-    <PageWrapper title="Range Practice">
+    <PageWrapper 
+      title="Range Practice" 
+      fullWidthSections={[]}
+    >
       {/* Range Selection Controls */}
       <div className="mb-8 max-w-md mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -129,70 +132,70 @@ export default function RangePracticePage() {
         </div>
       </div>
 
+      {/* Action Buttons Above Grid */}
       {selectedRangeData && (
-        <>
-          {/* Action Buttons Above Grid */}
-          <div className="mb-6 max-w-md mx-auto">
-            <div className="flex justify-between items-center">
-              {/* Left side - Raise and Call buttons */}
-              <div className="flex space-x-3">
-                <button
-                  onClick={() => setSelectedAction('raise')}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-colors text-sm ${
-                    selectedAction === 'raise'
-                      ? 'bg-red-600 text-white'
-                      : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
-                  }`}
-                >
-                  Raise
-                </button>
-                <button
-                  onClick={() => setSelectedAction('call')}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-colors text-sm ${
-                    selectedAction === 'call'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
-                  }`}
-                >
-                  Call
-                </button>
-              </div>
+        <div className="mb-6 max-w-md mx-auto">
+          <div className="flex justify-between items-center">
+            {/* Left side - Raise and Call buttons */}
+            <div className="flex space-x-3">
+              <button
+                onClick={() => setSelectedAction('raise')}
+                className={`px-4 py-2 rounded-lg font-semibold transition-colors text-sm ${
+                  selectedAction === 'raise'
+                    ? 'bg-red-600 text-white'
+                    : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                }`}
+              >
+                Raise
+              </button>
+              <button
+                onClick={() => setSelectedAction('call')}
+                className={`px-4 py-2 rounded-lg font-semibold transition-colors text-sm ${
+                  selectedAction === 'call'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                }`}
+              >
+                Call
+              </button>
+            </div>
 
-              {/* Right side - Clear and Submit buttons */}
-              <div className="flex space-x-3">
-                <button
-                  onClick={handleClear}
-                  className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-semibold transition-colors text-sm"
-                >
-                  Clear
-                </button>
-                <button
-                  onClick={handleSubmit}
-                  disabled={isSubmitted}
-                  className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-500 text-white rounded-lg font-semibold transition-colors text-sm"
-                >
-                  Submit
-                </button>
-              </div>
+            {/* Right side - Clear and Submit buttons */}
+            <div className="flex space-x-3">
+              <button
+                onClick={handleClear}
+                className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-semibold transition-colors text-sm"
+              >
+                Clear
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={isSubmitted}
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-500 text-white rounded-lg font-semibold transition-colors text-sm"
+              >
+                Submit
+              </button>
             </div>
           </div>
+        </div>
+      )}
 
-          {/* Range Grid */}
-          <div>
-            <div className="flex justify-center">
-              <RangeGrid
-                mode="test"
-                selectedRange={userRange}
-                onHandClick={handleHandClick}
-                selectedAction={selectedAction}
-                className="max-w-full"
-                showResults={isSubmitted}
-                correctActions={correctActions}
-              />
-            </div>
+      {/* Range Display */}
+      {selectedRangeData && (
+        <div className="mb-6">
+          <div className="flex justify-center">
+            <RangeGrid
+              mode="test"
+              selectedRange={userRange}
+              onHandClick={handleHandClick}
+              selectedAction={selectedAction}
+              className="max-w-full"
+              showResults={isSubmitted}
+              correctActions={correctActions}
+            />
           </div>
-        </>
+        </div>
       )}
     </PageWrapper>
-  );
+    );
 }

@@ -21,7 +21,7 @@ export default function RangeGrid({
   showResults = false,
   correctActions = {}
 }: RangeGridProps) {
-  const [isMouseDown, setIsMouseDown] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   
   const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
 
@@ -53,33 +53,25 @@ export default function RangeGrid({
 
   const handleMouseDown = useCallback((hand: string) => {
     if (mode === 'test') {
-      setIsMouseDown(true);
-      // Paint the cell on mouse down
-      const currentAction = getHandAction(hand);
-      const newAction = currentAction === selectedAction ? 'fold' : selectedAction;
-      if (onHandClick) {
-        onHandClick(hand, newAction);
-      }
+      setIsDragging(true);
+      handleHandClick(hand);
     }
-  }, [mode, onHandClick, selectedAction, getHandAction]);
+  }, [mode, handleHandClick]);
 
   const handleMouseEnter = useCallback((hand: string) => {
-    if (mode === 'test' && isMouseDown && onHandClick) {
-      // Paint cells as mouse moves over them while held down
-      const currentAction = getHandAction(hand);
-      const newAction = currentAction === selectedAction ? 'fold' : selectedAction;
-      onHandClick(hand, newAction);
+    if (mode === 'test' && isDragging && onHandClick) {
+      onHandClick(hand, selectedAction);
     }
-  }, [mode, isMouseDown, onHandClick, selectedAction, getHandAction]);
+  }, [mode, isDragging, onHandClick, selectedAction]);
 
   const handleMouseUp = useCallback(() => {
-    setIsMouseDown(false);
+    setIsDragging(false);
   }, []);
 
-  // Global mouse up handler to ensure mouse down state is reset
+  // Global mouse up handler
   useEffect(() => {
     const handleGlobalMouseUp = () => {
-      setIsMouseDown(false);
+      setIsDragging(false);
     };
 
     document.addEventListener('mouseup', handleGlobalMouseUp);
@@ -88,37 +80,31 @@ export default function RangeGrid({
     };
   }, []);
 
-  const handleTouchStart = useCallback((hand: string) => {
-    if (mode === 'test') {
-      handleHandClick(hand);
-    }
-  }, [mode, handleHandClick]);
+  // Simple touch handling - just prevent default and use mouse events
+  const handleTouchStart = useCallback((e: React.TouchEvent, hand: string) => {
+    e.preventDefault();
+    handleMouseDown(hand);
+  }, [handleMouseDown]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (mode === 'test' && isMouseDown) {
-      e.preventDefault();
-      const touch = e.touches[0];
-      const element = document.elementFromPoint(touch.clientX, touch.clientY);
-      if (element && element.getAttribute('data-hand')) {
-        const hand = element.getAttribute('data-hand')!;
-        if (onHandClick) {
-          onHandClick(hand, selectedAction);
-        }
-      }
-    }
-  }, [mode, isMouseDown, onHandClick, selectedAction]);
+    e.preventDefault();
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    e.preventDefault();
+    handleMouseUp();
+  }, [handleMouseUp]);
 
   const isInteractive = mode === 'test';
 
   return (
-    <div className={`relative ${className}`}>
-      {/* Grid Container */}
-      <div className="relative overflow-x-auto">
-        <div className="inline-block min-w-max">
-
+    <div className={`w-full ${className}`}>
+      {/* Grid Container - responsive sizing */}
+      <div className="w-full flex justify-center">
+        <div className="grid grid-cols-13 w-full max-w-sm lg:max-w-md xl:max-w-lg 2xl:max-w-xl">
           {/* Grid Rows */}
           {ranks.map((rank, rowIndex) => (
-            <div key={rank} className="flex items-center">
+            <div key={rank} className="contents">
               {/* Grid Cells */}
               {ranks.map((colRank, colIndex) => {
                 let hand = '';
@@ -141,7 +127,7 @@ export default function RangeGrid({
                   <div
                     key={`${rank}-${colRank}`}
                     className={`
-                      w-8 h-8 border border-gray-600 rounded-sm cursor-pointer
+                      aspect-square w-full max-w-[32px] sm:max-w-[40px] cursor-pointer border border-gray-700
                       transition-all duration-150 ease-in-out select-none relative
                       ${isSelected ? getHandColor(hand) : 'bg-gray-800 hover:bg-gray-700'}
                       ${isInteractive ? 'hover:scale-110' : ''}
@@ -151,9 +137,9 @@ export default function RangeGrid({
                     onMouseDown={() => handleMouseDown(hand)}
                     onMouseEnter={() => handleMouseEnter(hand)}
                     onMouseUp={handleMouseUp}
-                    onTouchStart={() => handleTouchStart(hand)}
+                    onTouchStart={(e) => handleTouchStart(e, hand)}
                     onTouchMove={handleTouchMove}
-                    onTouchEnd={handleMouseUp}
+                    onTouchEnd={handleTouchEnd}
                     title={`${hand}: ${action}`}
                   >
                     {/* Hand Label */}
@@ -216,8 +202,6 @@ export default function RangeGrid({
           <span className="text-gray-300">Fold</span>
         </div>
       </div>
-
-
     </div>
   );
 }

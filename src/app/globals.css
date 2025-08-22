@@ -21,3 +21,8 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
+
+/* Custom grid columns for poker range grid */
+.grid-cols-13 {
+  grid-template-columns: repeat(13, minmax(0, 1fr));
+}
