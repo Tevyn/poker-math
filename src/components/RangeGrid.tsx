@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 
 interface RangeGridProps {
   mode: 'study' | 'test' | 'readonly';
@@ -22,6 +22,8 @@ export default function RangeGrid({
   correctActions = {}
 }: RangeGridProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const [isTouchDragging, setIsTouchDragging] = useState(false);
+  const gridRef = useRef<HTMLDivElement>(null);
   
   const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
 
@@ -68,32 +70,77 @@ export default function RangeGrid({
     setIsDragging(false);
   }, []);
 
+  // Touch handling for mobile
+  const handleTouchStart = useCallback((e: React.TouchEvent, hand: string) => {
+    if (mode === 'test') {
+      e.preventDefault(); // Prevent scrolling
+      setIsTouchDragging(true);
+      handleHandClick(hand);
+    }
+  }, [mode, handleHandClick]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (mode === 'test' && isTouchDragging && gridRef.current) {
+      e.preventDefault(); // Prevent scrolling
+      
+      // Get touch position relative to the grid
+      const touch = e.touches[0];
+      const gridRect = gridRef.current.getBoundingClientRect();
+      const x = touch.clientX - gridRect.left;
+      const y = touch.clientY - gridRect.top;
+      
+      // Find which cell the touch is over
+      const cellSize = gridRect.width / 13; // 13 columns
+      const colIndex = Math.floor(x / cellSize);
+      const rowIndex = Math.floor(y / cellSize);
+      
+      // Ensure indices are within bounds
+      if (colIndex >= 0 && colIndex < 13 && rowIndex >= 0 && rowIndex < 13) {
+        const rank = ranks[rowIndex];
+        const colRank = ranks[colIndex];
+        let hand = '';
+        
+        if (rowIndex === colIndex) {
+          hand = rank + colRank;
+        } else if (rowIndex < colIndex) {
+          hand = rank + colRank + 's';
+        } else {
+          hand = colRank + rank + 'o';
+        }
+        
+        // Paint the cell
+        if (onHandClick) {
+          onHandClick(hand, selectedAction);
+        }
+      }
+    }
+  }, [mode, isTouchDragging, onHandClick, selectedAction, ranks]);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (mode === 'test') {
+      e.preventDefault();
+      setIsTouchDragging(false);
+    }
+  }, [mode]);
+
   // Global mouse up handler
   useEffect(() => {
     const handleGlobalMouseUp = () => {
       setIsDragging(false);
     };
 
+    const handleGlobalTouchEnd = () => {
+      setIsTouchDragging(false);
+    };
+
     document.addEventListener('mouseup', handleGlobalMouseUp);
+    document.addEventListener('touchend', handleGlobalTouchEnd);
+    
     return () => {
       document.removeEventListener('mouseup', handleGlobalMouseUp);
+      document.removeEventListener('touchend', handleGlobalTouchEnd);
     };
   }, []);
-
-  // Simple touch handling - just prevent default and use mouse events
-  const handleTouchStart = useCallback((e: React.TouchEvent, hand: string) => {
-    e.preventDefault();
-    handleMouseDown(hand);
-  }, [handleMouseDown]);
-
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    e.preventDefault();
-  }, []);
-
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    e.preventDefault();
-    handleMouseUp();
-  }, [handleMouseUp]);
 
   const isInteractive = mode === 'test';
 
@@ -101,7 +148,11 @@ export default function RangeGrid({
     <div className={`w-full ${className}`}>
       {/* Grid Container - responsive sizing */}
       <div className="w-full flex justify-center">
-        <div className="grid grid-cols-13 w-full max-w-sm lg:max-w-md xl:max-w-lg 2xl:max-w-xl">
+        <div 
+          ref={gridRef}
+          className="grid grid-cols-13 w-full max-w-sm lg:max-w-md xl:max-w-lg 2xl:max-w-xl"
+          style={{ touchAction: 'none' }} // Prevent default touch behaviors
+        >
           {/* Grid Rows */}
           {ranks.map((rank, rowIndex) => (
             <div key={rank} className="contents">
