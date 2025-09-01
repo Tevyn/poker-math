@@ -1,6 +1,6 @@
 import React from 'react';
 import PlayerHandCard from './PlayerHandCard';
-import { PlayerHand } from '../types/whoWinsProblems';
+import { PlayerHand } from '../types/whoWins';
 
 interface HandSelectionGridProps {
   playerHands: PlayerHand[];
@@ -21,7 +21,7 @@ export default function HandSelectionGrid({
 }: HandSelectionGridProps) {
   return (
     <div className={`${className}`}>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+      <div className="grid grid-cols-2 gap-4 max-w-4xl mx-auto">
         {playerHands.map((playerHand, index) => (
           <PlayerHandCard
             key={playerHand.id}

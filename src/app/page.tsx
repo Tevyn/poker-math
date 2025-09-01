@@ -21,14 +21,16 @@ export default function Home() {
                 </div>
               </div>
             </Link>
-            <div className="bg-gray-900 overflow-hidden shadow rounded-lg border border-gray-800 opacity-50">
-              <div className="px-4 py-5 sm:p-6">
-                <h3 className="text-lg font-medium text-gray-100">Hand vs. Range</h3>
-                <p className="mt-2 text-sm text-gray-300">
-                  Compare equity between a hand and a range.
-                </p>
+            <Link href="/hand-vs-range" className="block">
+              <div className="bg-gray-900 overflow-hidden shadow rounded-lg border border-gray-800 hover:bg-gray-800 hover:border-gray-700 transition-all duration-200">
+                <div className="px-4 py-5 sm:p-6">
+                  <h3 className="text-lg font-medium text-gray-100">Hand vs. Range</h3>
+                  <p className="mt-2 text-sm text-gray-300">
+                    Compare equity between a hand and a range.
+                  </p>
+                </div>
               </div>
-            </div>
+            </Link>
             <div className="bg-gray-900 overflow-hidden shadow rounded-lg border border-gray-800 opacity-50">
               <div className="px-4 py-5 sm:p-6">
                 <h3 className="text-lg font-medium text-gray-100">Range vs. Range</h3>

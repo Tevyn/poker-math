@@ -1,6 +1,6 @@
 import React from 'react';
 import PokerCard from './PokerCard';
-import { PlayerHand } from '../types/whoWinsProblems';
+import { PlayerHand } from '../types/whoWins';
 
 interface PlayerHandCardProps {
   playerHand: PlayerHand;
@@ -9,24 +9,6 @@ interface PlayerHandCardProps {
   isWinner: boolean; // New prop to handle both single winner and ties
   onClick: () => void;
   className?: string;
-}
-
-// Helper function to convert card string to rank and suit
-function parseCard(cardString: string): { rank: string; suit: string } {
-  const rank = cardString[0];
-  const suitCode = cardString[1];
-  
-  const suitSymbols: { [key: string]: string } = {
-    'h': '♥',
-    'd': '♦',
-    'c': '♣',
-    's': '♠'
-  };
-  
-  return {
-    rank: rank === 'T' ? '10' : rank,
-    suit: suitSymbols[suitCode] || suitCode
-  };
 }
 
 export default function PlayerHandCard({ 
@@ -38,8 +20,6 @@ export default function PlayerHandCard({
   className = "" 
 }: PlayerHandCardProps) {
   const [card1, card2] = playerHand.cards;
-  const parsedCard1 = parseCard(card1);
-  const parsedCard2 = parseCard(card2);
   
   // Determine the styling based on selection and correctness
   let borderStyle = 'border-gray-700 bg-gray-800 hover:border-gray-600 hover:bg-gray-700';
@@ -70,13 +50,11 @@ export default function PlayerHandCard({
       
       <div className="flex justify-center space-x-2">
         <PokerCard 
-          rank={parsedCard1.rank} 
-          suit={parsedCard1.suit} 
+          card={card1}
           className="w-12 h-16 text-lg"
         />
         <PokerCard 
-          rank={parsedCard2.rank} 
-          suit={parsedCard2.suit} 
+          card={card2}
           className="w-12 h-16 text-lg"
         />
       </div>

@@ -11,25 +11,15 @@ import { HandPracticeQuestion } from '../../types/rangeTypes';
 import { rangeData } from '../../data/rangeData';
 import { generateRandomWhoWinsProblem } from '../../utils/dynamicProblemGenerator';
 
-// Helper function to convert WhoWins hand format to card objects for display
-function parseHandFromWhoWins(handCards: [string, string]): [{ rank: string; suit: string }, { rank: string; suit: string }] {
+import type { Combo, Card } from '../../utils/lib/models';
+
+// Helper function to convert WhoWins hand format to lib Card format for display
+function parseHandFromWhoWins(handCards: [string, string]): Combo {
   const [card1, card2] = handCards;
   
-  const parseCard = (cardString: string): { rank: string; suit: string } => {
-    const rank = cardString[0];
-    const suitCode = cardString[1];
-    
-    const suitSymbols: { [key: string]: string } = {
-      'h': '♥',
-      'd': '♦',
-      'c': '♣',
-      's': '♠'
-    };
-    
-    return {
-      rank: rank === 'T' ? '10' : rank,
-      suit: suitSymbols[suitCode] || suitCode
-    };
+  const parseCard = (cardString: string): Card => {
+    // cardString is already in the correct format (e.g., "As", "Kh")
+    return cardString as Card;
   };
   
   return [parseCard(card1), parseCard(card2)];

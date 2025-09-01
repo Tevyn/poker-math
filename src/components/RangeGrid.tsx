@@ -10,6 +10,7 @@ interface RangeGridProps {
   className?: string;
   showResults?: boolean;
   correctActions?: Record<string, string>; // hand -> correct action mapping
+  showLegend?: boolean; // Whether to show the legend
 }
 
 export default function RangeGrid({
@@ -19,7 +20,8 @@ export default function RangeGrid({
   selectedAction = 'raise',
   className = '',
   showResults = false,
-  correctActions = {}
+  correctActions = {},
+  showLegend = true
 }: RangeGridProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isTouchDragging, setIsTouchDragging] = useState(false);
@@ -239,20 +241,22 @@ export default function RangeGrid({
       </div>
 
       {/* Legend */}
-      <div className="mt-6 flex flex-wrap justify-center gap-6 text-sm">
-        <div className="flex items-center space-x-2">
-          <div className="w-4 h-4 bg-red-600 rounded-sm"></div>
-          <span className="text-gray-300">Raise</span>
+      {showLegend && (
+        <div className="mt-6 flex flex-wrap justify-center gap-6 text-sm">
+          <div className="flex items-center space-x-2">
+            <div className="w-4 h-4 bg-red-600 rounded-sm"></div>
+            <span className="text-gray-300">Raise</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="w-4 h-4 bg-blue-600 rounded-sm"></div>
+            <span className="text-gray-300">Call</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="w-4 h-4 bg-gray-700 rounded-sm"></div>
+            <span className="text-gray-300">Fold</span>
+          </div>
         </div>
-        <div className="flex items-center space-x-2">
-          <div className="w-4 h-4 bg-blue-600 rounded-sm"></div>
-          <span className="text-gray-300">Call</span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <div className="w-4 h-4 bg-gray-700 rounded-sm"></div>
-          <span className="text-gray-300">Fold</span>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

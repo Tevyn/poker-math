@@ -6,107 +6,134 @@ import HandDisplay from '../../components/HandDisplay';
 import EquitySlider from '../../components/EquitySlider';
 import SubmitButton from '../../components/SubmitButton';
 import NextProblemButton from '../../components/NextProblemButton';
-import { ProblemManager } from '../../utils/problemManager';
-import { PokerProblem } from '../../types/pokerProblems';
-
-// Helper function to convert card string to rank and suit
-function parseCard(cardString: string): { rank: string; suit: string } {
-  const rank = cardString[0];
-  const suitCode = cardString[1];
-  
-  const suitSymbols: { [key: string]: string } = {
-    'h': '♥',
-    'd': '♦',
-    'c': '♣',
-    's': '♠'
-  };
-  
-  return {
-    rank: rank === 'T' ? '10' : rank,
-    suit: suitSymbols[suitCode] || suitCode
-  };
-}
+import { generateTwoRandomHands } from '../../utils/simpleRandomHands';
+import { calculateHandVsHandEquity, formatEquityResult } from '../../utils/handVsHandEquity';
+import type { HandVsHandScenario, HandVsHandResult } from '../../types/handVsHand';
 
 export default function HandVsHandPage() {
-  const [problemManager] = useState(() => new ProblemManager());
-  const [currentProblem, setCurrentProblem] = useState<PokerProblem | null>(null);
+  const [currentScenario, setCurrentScenario] = useState<HandVsHandScenario | null>(null);
   const [userEstimate, setUserEstimate] = useState(50);
   const [showResult, setShowResult] = useState(false);
+  const [currentResult, setCurrentResult] = useState<HandVsHandResult | null>(null);
   const [isCorrect, setIsCorrect] = useState(false);
-  const [correctAnswer, setCorrectAnswer] = useState<number | null>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
+  const [problemNumber, setProblemNumber] = useState(1);
 
+  // Generate initial scenario
   useEffect(() => {
-    // Get initial problem
-    const problem = problemManager.getRandomProblem();
-    setCurrentProblem(problem);
-    
-    // Calculate correct answer
-    const equity = problemManager.calculateCurrentProblemEquity();
-    setCorrectAnswer(equity);
-  }, [problemManager]);
+    generateNewScenario();
+  }, []);
 
-  const handleSubmit = () => {
-    if (!correctAnswer) return;
+  const generateNewScenario = () => {
+    const [hand1, hand2] = generateTwoRandomHands();
+    const scenario: HandVsHandScenario = {
+      hand1,
+      hand2,
+      board: [], // Start with preflop for simplicity
+      id: `scenario-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    };
+    setCurrentScenario(scenario);
+    setCurrentResult(null);
+    setShowResult(false);
+    setIsCorrect(false);
+  };
+
+  const handleSubmit = async () => {
+    if (!currentScenario) return;
     
-    const difference = Math.abs(userEstimate - correctAnswer);
-    const tolerance = 5;
-    setIsCorrect(difference <= tolerance);
-    setShowResult(true);
+    setIsCalculating(true);
+    
+    try {
+      // Give React a chance to re-render with the loading state
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
+      // Add a minimum loading time to show the loading state
+      const startTime = Date.now();
+      
+      // Calculate equity using our lib-based utility
+      const equity = calculateHandVsHandEquity(
+        currentScenario.hand1,
+        currentScenario.hand2,
+        currentScenario.board
+      );
+      
+      // Ensure minimum loading time of 500ms
+      const elapsed = Date.now() - startTime;
+      if (elapsed < 500) {
+        await new Promise(resolve => setTimeout(resolve, 500 - elapsed));
+      }
+      
+      // Format result for UI display
+      const formattedResult = formatEquityResult(equity);
+      const result: HandVsHandResult = {
+        ...formattedResult,
+        rawEquity: equity
+      };
+      setCurrentResult(result);
+      
+      // Check if user's estimate is correct (within 5 percentage points)
+      const tolerance = 5;
+      const difference = Math.abs(userEstimate - result.hand1Equity);
+      setIsCorrect(difference <= tolerance);
+      
+      setShowResult(true);
+    } catch (error) {
+      console.error('Error calculating equity:', error);
+    } finally {
+      setIsCalculating(false);
+    }
   };
 
   const handleNextProblem = () => {
-    const problem = problemManager.getRandomProblem();
-    setCurrentProblem(problem);
-    
-    // Calculate correct answer for new problem
-    const equity = problemManager.calculateCurrentProblemEquity();
-    setCorrectAnswer(equity);
-    
+    generateNewScenario();
     setUserEstimate(50);
-    setShowResult(false);
-    setIsCorrect(false);
+    setProblemNumber(prev => prev + 1);
   };
 
   const handleEstimateChange = (value: number) => {
     setUserEstimate(value);
   };
 
-  if (!currentProblem || correctAnswer === null) {
-    return <div>Loading...</div>;
+  if (!currentScenario) {
+    return (
+      <PageWrapper title="Hand vs. Hand">
+        <div className="text-center text-gray-400">Generating scenario...</div>
+      </PageWrapper>
+    );
   }
-
-  const correctHand2Equity = 100 - correctAnswer;
 
   return (
     <PageWrapper title="Hand vs. Hand">
-      {/* Problem Display */}
+
+
+      {/* Hand Display */}
       <div className="my-8">
         <div className="flex flex-col sm:flex-row justify-center items-center space-y-8 sm:space-y-0 sm:gap-16">
-          {/* Second Hand - appears first on mobile, left on desktop */}
+          {/* Villain Hand - appears first on mobile, left on desktop */}
           <div className="order-1 sm:order-2">
             <HandDisplay 
               title="Villain" 
-              cards={[
-                parseCard(currentProblem.hand2.card1),
-                parseCard(currentProblem.hand2.card2)
-              ]} 
+              cards={currentScenario.hand2}
             />
             <div className="mt-4 text-2xl font-bold text-gray-400 text-center">
-              {Math.round(100 - userEstimate)}%
+              {showResult && currentResult 
+                ? `${Math.round(currentResult.hand2Equity)}%`
+                : `${Math.round(100 - userEstimate)}%`
+              }
             </div>
           </div>
 
-          {/* First Hand - appears second on mobile, right on desktop */}
+          {/* Hero Hand - appears second on mobile, right on desktop */}
           <div className="order-2 sm:order-1">
             <HandDisplay 
               title="Hero" 
-              cards={[
-                parseCard(currentProblem.hand1.card1),
-                parseCard(currentProblem.hand1.card2)
-              ]} 
+              cards={currentScenario.hand1}
             />
             <div className="mt-4 text-2xl font-bold text-blue-400 text-center">
-              {Math.round(userEstimate)}%
+              {showResult && currentResult 
+                ? `${Math.round(currentResult.hand1Equity)}%`
+                : `${Math.round(userEstimate)}%`
+              }
             </div>
           </div>
         </div>
@@ -117,12 +144,12 @@ export default function HandVsHandPage() {
         <EquitySlider 
           value={userEstimate} 
           onChange={handleEstimateChange}
-          correctAnswer={correctAnswer}
+          correctAnswer={currentResult?.hand1Equity}
           showResult={showResult}
+          isCorrect={isCorrect}
           mode="percentage"
         />
       </div>
-
 
       {/* Submit/Next Button */}
       <div className="mb-8">
@@ -130,14 +157,19 @@ export default function HandVsHandPage() {
           {!showResult ? (
             <SubmitButton 
               onSubmit={handleSubmit}
+              disabled={isCalculating}
+              isLoading={isCalculating}
             />
           ) : (
             <NextProblemButton 
               onNextProblem={handleNextProblem}
             />
           )}
+          
+
         </div>
       </div>
+
     </PageWrapper>
   );
 }
