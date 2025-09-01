@@ -9,12 +9,12 @@ import NextProblemButton from '../../components/NextProblemButton';
 import { generateHandPracticeQuestion, checkHandPracticeAnswer } from '../../utils/rangeUtils';
 import { HandPracticeQuestion } from '../../types/rangeTypes';
 import { rangeData } from '../../data/rangeData';
-import { generateRandomWhoWinsProblem } from '../../utils/dynamicProblemGenerator';
+import { generateRandomHand } from '../../utils/simpleRandomHands';
 
 import type { Combo, Card } from '../../utils/lib/models';
 
-// Helper function to convert WhoWins hand format to lib Card format for display
-function parseHandFromWhoWins(handCards: [string, string]): Combo {
+// Helper function to convert hand cards to lib Card format for display
+function parseHandCards(handCards: [string, string]): Combo {
   const [card1, card2] = handCards;
   
   const parseCard = (cardString: string): Card => {
@@ -38,8 +38,8 @@ export default function HandPracticePage() {
     const question = generateHandPracticeQuestion();
     setCurrentQuestion(question);
     
-    // Generate initial hand cards using WhoWins utilities
-    const handCards = generateRandomHandFromWhoWins();
+    // Generate initial hand cards
+    const handCards = generateRandomHandCards();
     setCurrentHandCards(handCards);
     
     // Reset state
@@ -48,14 +48,13 @@ export default function HandPracticePage() {
     setResult(null);
   }, []);
 
-  // Function to generate a random hand using WhoWins utilities
-  const generateRandomHandFromWhoWins = (): [string, string] => {
-    const problem = generateRandomWhoWinsProblem();
-    // Extract the first player's hand
-    return problem.playerHands[0].cards;
+  // Function to generate a random hand using simple random hand generator
+  const generateRandomHandCards = (): [string, string] => {
+    const hand = generateRandomHand();
+    return [hand[0], hand[1]];
   };
 
-  // Function to convert WhoWins hand format to range format
+  // Function to convert hand cards to range format
   const convertHandCardsToRangeFormat = (handCards: [string, string]): string => {
     const [card1, card2] = handCards;
     const rank1 = card1[0];
@@ -103,9 +102,8 @@ export default function HandPracticePage() {
     return 'fold';
   };
 
-  // Get available categories and ranges for the selected category
+  // Get available categories for the selected category
   const categories = Object.keys(rangeData);
-  const ranges = Object.keys(rangeData[selectedCategory]?.ranges || {});
 
   const handleAnswerSelect = (rangeId: string, action: string) => {
     setUserAnswers(prev => ({
@@ -128,8 +126,8 @@ export default function HandPracticePage() {
   };
 
   const handleNextHand = () => {
-    // Generate a new random hand using WhoWins utilities
-    const handCards = generateRandomHandFromWhoWins();
+    // Generate a new random hand
+    const handCards = generateRandomHandCards();
     const hand = convertHandCardsToRangeFormat(handCards);
     
     // Create a new question with the new hand
@@ -205,7 +203,7 @@ export default function HandPracticePage() {
           {currentHandCards && (
             <HandDisplay 
               title="" 
-              cards={parseHandFromWhoWins(currentHandCards)} 
+              cards={parseHandCards(currentHandCards)} 
             />
           )}
         </div>
