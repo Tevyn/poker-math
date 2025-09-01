@@ -327,17 +327,17 @@ export const convertRangeWithLibIntegration = (range: PokerRange): {
   // Step 1: Convert range to descriptor
   try {
     const descriptor = convertRangeToDescriptor(range);
-    conversionSteps.step1 = { descriptor, success: true };
+    conversionSteps.step1 = { descriptor, success: true, error: undefined };
     
     // Step 2: Convert descriptor to hands using descriptorToHands
     try {
       const hands = descriptorToHands(descriptor);
-      conversionSteps.step2 = { handsCount: hands.size, success: true };
+      conversionSteps.step2 = { handsCount: hands.size, success: true, error: undefined };
       
       // Step 3: Convert hands to combos using handsToCombos
       try {
         const combos = handsToCombos(hands, new Map());
-        conversionSteps.step3 = { combosCount: combos.size, success: true };
+        conversionSteps.step3 = { combosCount: combos.size, success: true, error: undefined };
         
         return {
           combos: Array.from(combos),
