@@ -3,10 +3,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import PageWrapper from '../../components/PageWrapper';
 import HandDisplay from '../../components/HandDisplay';
+import BoardDisplay from '../../components/BoardDisplay';
 import EquitySlider from '../../components/EquitySlider';
 import SubmitButton from '../../components/SubmitButton';
 import NextProblemButton from '../../components/NextProblemButton';
-import { generateRandomHand } from '../../utils/simpleRandomHands';
+import { generateRandomHand, generateRandomBoard } from '../../utils/simpleRandomHands';
 import { calculateHandVsRangeEquity, formatHandVsRangeResult } from '../../utils/handVsRangeEquity';
 import { convertRangeToRangeGridFormat } from '../../utils/rangeConverter';
 import { rangeData, getCategoryIds, getRangeIds, getRange } from '../../data/rangeData';
@@ -14,7 +15,7 @@ import RangeGrid from '../../components/RangeGrid';
 import type { HandVsRangeScenario, HandVsRangeResult } from '../../types/handVsRange';
 import type { PokerRange } from '../../types/rangeTypes';
 
-export default function HandVsRangePage() {
+export default function HandVsRangePostflopPage() {
   const [currentScenario, setCurrentScenario] = useState<HandVsRangeScenario | null>(null);
   const [userEstimate, setUserEstimate] = useState(50);
   const [showResult, setShowResult] = useState(false);
@@ -26,6 +27,9 @@ export default function HandVsRangePage() {
   // Range selection state
   const [selectedCategory, setSelectedCategory] = useState('open_raises');
   const [selectedRange, setSelectedRange] = useState('lj');
+  
+  // Board size selection state
+  const [boardSize, setBoardSize] = useState<'flop' | 'turn' | 'river'>('flop');
 
   // Get available categories and ranges
   const categories = useMemo(() => getCategoryIds(), []);
@@ -55,16 +59,21 @@ export default function HandVsRangePage() {
   // Generate initial scenario
   useEffect(() => {
     generateNewScenario();
-  }, [villainRange]);
+  }, [villainRange, boardSize]);
 
   const generateNewScenario = () => {
     if (!villainRange) return;
     
     const heroHand = generateRandomHand();
+    
+    // Generate board cards based on selected board size
+    const boardCardCount = boardSize === 'flop' ? 3 : boardSize === 'turn' ? 4 : 5;
+    const board = generateRandomBoard(boardCardCount, heroHand);
+    
     const scenario: HandVsRangeScenario = {
       heroHand,
       villainRange,
-      board: [], // Start with preflop for simplicity
+      board,
       id: `scenario-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     };
     setCurrentScenario(scenario);
@@ -127,14 +136,14 @@ export default function HandVsRangePage() {
 
   if (!currentScenario || !villainRange) {
     return (
-      <PageWrapper title="Hand vs. Range">
+      <PageWrapper title="Hand vs. Range: Postflop">
         <div className="text-center text-gray-400">Generating scenario...</div>
       </PageWrapper>
     );
   }
 
   return (
-    <PageWrapper title="Hand vs. Range: Preflop">
+    <PageWrapper title="Hand vs. Range: Postflop">
       {/* Range Selection Controls */}
       <div className="mb-8 max-w-md mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -187,6 +196,35 @@ export default function HandVsRangePage() {
             </select>
           </div>
         </div>
+      </div>
+
+      {/* Board Size Selection */}
+      <div className="mb-8 max-w-md mx-auto">
+        <div className="text-center">
+          <label className="block text-sm font-medium text-gray-300 mb-4">
+            Board Size
+          </label>
+          <div className="flex justify-center space-x-4">
+            {(['flop', 'turn', 'river'] as const).map((size) => (
+              <button
+                key={size}
+                onClick={() => setBoardSize(size)}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  boardSize === size
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }`}
+              >
+                {size.charAt(0).toUpperCase() + size.slice(1)} ({size === 'flop' ? '3' : size === 'turn' ? '4' : '5'} cards)
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Board Display */}
+      <div className="mb-8">
+        <BoardDisplay board={currentScenario.board} />
       </div>
 
       {/* Hand Display */}

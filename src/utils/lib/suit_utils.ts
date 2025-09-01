@@ -146,7 +146,6 @@ const setSelectedSuitsOffsuit = (suit: SuitAnnotation, prevSelected: SuitAnnotat
     }
   } else {
     allSelected = expandSelectedSuitsOffsuit(prevSelected);
-    console.log(allSelected);
     if (allSelected.has(suit)) {
       allSelected.delete(suit);
     } else {

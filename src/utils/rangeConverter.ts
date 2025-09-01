@@ -8,24 +8,19 @@ import type { PokerRange } from "../types/rangeTypes";
  * This bridges the gap between rangeData format and lib format
  */
 export const convertRangeSelectionToCombos = (range: PokerRange): Combo[] => {
-  console.log('🔄 Converting range selection to combos...');
   const allHands = new Set<string>();
   
   // Collect all hands from the range
   if (range.raise) {
-    console.log('Raise hands:', range.raise.length);
     range.raise.forEach(hand => allHands.add(hand));
   }
   if (range.call) {
-    console.log('Call hands:', range.call.length);
     range.call.forEach(hand => allHands.add(hand));
   }
   if (range.fold) {
-    console.log('Fold hands:', range.fold.length);
     range.fold.forEach(hand => allHands.add(hand));
   }
   
-  console.log('Total unique hands:', allHands.size);
   
   if (allHands.size === 0) {
     return [];
@@ -33,16 +28,11 @@ export const convertRangeSelectionToCombos = (range: PokerRange): Combo[] => {
   
   // Convert to descriptor format
   const descriptor = Array.from(allHands).join(', ');
-  console.log('Descriptor length:', descriptor.length);
   
   // Convert descriptor to hands to combos
-  console.log('Converting descriptor to hands...');
   const hands = descriptorToHands(descriptor);
-  console.log('Hands generated:', hands.size);
   
-  console.log('Converting hands to combos...');
   const combos = handsToCombos(hands, new Map());
-  console.log('Combos generated:', combos.size);
   
   return Array.from(combos);
 };

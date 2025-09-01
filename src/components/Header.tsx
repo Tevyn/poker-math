@@ -75,12 +75,14 @@ export default function Header() {
                   </Link>
                   <Link href="/hand-vs-range" className="block" onClick={() => setIsMenuOpen(false)}>
                     <div className="text-gray-100 hover:text-gray-300 transition-colors py-2 text-lg">
-                      Hand vs. Range
+                      Hand vs. Range: Preflop
                     </div>
                   </Link>
-                  <div className="text-gray-500 py-2 text-lg">
-                    Range vs. Range
-                  </div>
+                  <Link href="/hand-vs-range-postflop" className="block" onClick={() => setIsMenuOpen(false)}>
+                    <div className="text-gray-100 hover:text-gray-300 transition-colors py-2 text-lg">
+                      Hand vs. Range: Postflop
+                    </div>
+                  </Link>
                 </div>
               </div>
 

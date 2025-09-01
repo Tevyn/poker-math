@@ -26,22 +26,16 @@ export const calculateHandVsRangeEquity = async (
   board: Card[] = [],
   useExactCalculation: boolean = true
 ): Promise<Equity> => {
-  console.log('🔍 Starting calculateHandVsRangeEquity');
-  console.log('Hero hand:', heroHand);
-  console.log('Board:', board);
-  console.log('Use exact calculation:', useExactCalculation);
+
   
   // Convert villain range to combos
-  console.log('📊 Converting villain range to combos...');
   const allVillainCombos = convertRangeSelectionToCombos(villainRange);
-  console.log('Total villain combos before filtering:', allVillainCombos.length);
   
   if (allVillainCombos.length === 0) {
     throw new Error("Villain range is empty");
   }
   
   // Filter out villain combos that conflict with hero hand or board
-  console.log('🚫 Filtering out conflicting combos...');
   const heroCards = new Set(heroHand);
   const boardCards = new Set(board);
   const conflictCards = new Set([...heroCards, ...boardCards]);
@@ -50,30 +44,23 @@ export const calculateHandVsRangeEquity = async (
     return !combo.some(card => conflictCards.has(card));
   });
   
-  console.log('Valid villain combos after filtering:', villainCombos.length);
-  console.log('Filtered out:', allVillainCombos.length - villainCombos.length, 'combos');
   
   if (villainCombos.length === 0) {
     throw new Error("No valid villain combos remain after removing conflicts with hero hand and board");
   }
   
   // Validate hero hand and board compatibility (should pass now since we filtered conflicts)
-  console.log('✅ Validating hand and board...');
   validateHandAndBoard(heroHand, villainCombos, board);
   
   // Use the appropriate calculation method
-  console.log('🧮 Starting equity calculation...');
   
   // For large ranges, automatically switch to Monte Carlo to prevent hanging
   const shouldUseMonteCarlo = !useExactCalculation || villainCombos.length > 2;
   
   if (shouldUseMonteCarlo) {
-    console.log('Using Monte Carlo approximation (combos:', villainCombos.length, ')');
-    const startTime = Date.now();
-    
     // Wrap in promise for timeout protection
     const calculationPromise = new Promise<Equity>((resolve) => {
-      const result = approximateHandRangeEquity(heroHand, villainCombos, 10000);
+      const result = approximateHandRangeEquity(heroHand, villainCombos, 100000);
       resolve(result);
     });
     
@@ -83,14 +70,8 @@ export const calculateHandVsRangeEquity = async (
       'Monte Carlo equity calculation timed out after 30 seconds'
     );
     
-    const endTime = Date.now();
-    console.log('✨ Equity calculation completed in', endTime - startTime, 'ms');
-    console.log('Result:', result);
     return result;
   } else {
-    console.log('Using exact calculation method (combos:', villainCombos.length, ')');
-    const startTime = Date.now();
-    
     // Wrap in promise for timeout protection
     const calculationPromise = new Promise<Equity>((resolve) => {
       const result = calculateHandRangeEquity(heroHand, villainCombos, board);
@@ -103,9 +84,6 @@ export const calculateHandVsRangeEquity = async (
       'Exact equity calculation timed out after 60 seconds'
     );
     
-    const endTime = Date.now();
-    console.log('✨ Equity calculation completed in', endTime - startTime, 'ms');
-    console.log('Result:', result);
     return result;
   }
 };

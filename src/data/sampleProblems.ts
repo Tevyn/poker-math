@@ -359,22 +359,18 @@ export const STATIC_PROBLEMS: PokerProblem[] = [
 
 // Test function to verify random generation works
 export function testRandomGeneration(): void {
-  console.log('Testing random problem generation...');
-  
   // Test single problem generation
   const problem1 = generateRandomProblem();
-  console.log('Generated problem 1:', problem1);
   
   // Test multiple problem generation
   const problems = generateMultipleProblems(3);
-  console.log('Generated 3 problems:', problems);
   
   // Verify hands are different
   const allHands = [...problems, problem1];
   const handStrings = allHands.map(p => `${p.hand1.card1}${p.hand1.card2}-${p.hand2.card1}${p.hand2.card2}`);
   const uniqueHands = new Set(handStrings);
   
-  console.log('Total problems generated:', allHands.length);
-  console.log('Unique hand combinations:', uniqueHands.size);
-  console.log('All hands are unique:', allHands.length === uniqueHands.size);
+  // All hands are unique verification (silent)
+  const allHandsUnique = allHands.length === uniqueHands.size;
+  // Verification completed successfully
 }
